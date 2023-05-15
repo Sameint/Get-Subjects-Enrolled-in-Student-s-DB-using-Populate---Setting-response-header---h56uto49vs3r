@@ -45,14 +45,42 @@ const addSubjectToStudent = async (req, res) => {
     const { roll, subjectCode } = req.body;
 
     try {
-        //Write your Code Here
+        const student = await Student.findOne({ roll });
+
+    if (!student) {
+      return res.status(404).json({ error: 'Student not found' });
+    }
+
+    // Find the subject based on the subject code
+    const subject = await Subject.findOne({ subjectCode });
+
+    if (!subject) {
+      return res.status(404).json({ error: 'Subject not found' });
+    }
+
+    // Check if the student is already enrolled in the subject
+    const isEnrolled = student.subjects.includes(subject._id);
+
+    if (isEnrolled) {
+      return res.status(409).json({ error: 'Student is already enrolled in the subject' });
+    }
+
+    // Add the subject to the student's list of subjects
+    student.subjects.push(subject._id);
+    await student.save();
+
         res.status(200).json({ message: 'Subject added to student successfully' });
     } catch (error) {
         console.error(error);
         res.status(400).json({ message: 'Unable to Fetch Data' });
     }
 }
-
+const data={}
+if(!subjectCode){
+ res.status(404).json({status:error,message:"Subject not found"})
+}else{
+ res.status(200).json({status:"Suce1"})
+}
 /*
 You need to write a controller function that fetches all the subjects of a student from the database. The function should take a roll number in the request body and use it to find the corresponding student object from the database using findOne method.
 
@@ -71,7 +99,7 @@ Sample Output:
 {
 "subjects": [
     {
-    "_id": "615d1bdcf1c7dc621d693cd4",
+    "_id": "615d1bdcf1c7dc621d6'93cd4",
     "subjectCode": "MATH101",
     "name": "Mathematics",
     "__v": 0
